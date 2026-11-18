@@ -13,6 +13,7 @@ A practical workspace for a BA graduate and Operations Supervisor who uses Excel
 - Comparisons for Data Analyst, Govt MIS/DEO/Computer Operator, Govt Project/Programme Assistant and Govt contractual Operations/MIS.
 - Reusable CV summary, STAR, weekly review, project README and eligibility templates.
 - JSON backup and restore.
+- A searchable free-data directory with 64 source entries across 14 subject areas, plus a clearly separate dataset-discovery tool. Filter by subject, file format, access requirements and beginner suitability; export the filtered directory to CSV or turn a source into a project brief.
 
 The app starts without completed learning, earned credentials, job applications or live vacancy claims. Independent projects are labelled as learning work rather than employment or internships.
 
@@ -51,6 +52,8 @@ With Node.js 18 or later:
 ```sh
 node --check dist/app.js
 node --check dist/data.js
+node --check dist/data-sources.js
+node --check dist/data-directory.js
 node tests/check-workspace.cjs
 ```
 
@@ -63,6 +66,8 @@ dist/
   index.html
   styles.css
   data.js
+  data-sources.js
+  data-directory.js
   app.js
 tests/
   check-workspace.cjs
@@ -71,3 +76,13 @@ tests/
 ```
 
 The original Sites hosting configuration is intentionally excluded from this GitHub Pages copy. The deployed app uses relative asset paths and hash routes so it works under the repository URL.
+
+## Free data directory
+
+Open **Free data sources** in the sidebar, or use `#datasets` in the website URL. The 64 entries include open catalogues and useful specific dataset collections; a provider can have more than one entry. Google Dataset Search is listed separately as discovery only because its results are not guaranteed to be free.
+
+The directory covers business/retail, transport/logistics, India/government, economy/finance, general data, population/society, health, food/agriculture, energy, climate/environment, maps/geography, science/education, text/images/audio/video and sports. Each entry includes the provider URL, typical formats, account requirements, a project idea, reuse or free-tier limits, an official evidence link and a checked date. Access notes were checked on 18 November 2026; terms can change.
+
+Free means the stated public downloads or stated free plan can be used without paying for data. It does not promise unrestricted licences, unlimited API requests, free cloud computation, or a free copy of every dataset a catalogue links to. No paid-only providers, credit-card trials or automatic API calls are needed. Use public/ungated records; optional premium services are separate. Small CSV/Excel files are the best starting point on a laptop or mobile hotspot.
+
+Directory filters only affect this view. **Use for a project** prepares an editable independent-project brief; it creates a saved project only after you select **Save project brief**. Existing tracker records, storage keys and backups retain their current format. To maintain the catalogue, edit `dist/data-sources.js` and update the specific source's evidence link and checked date.

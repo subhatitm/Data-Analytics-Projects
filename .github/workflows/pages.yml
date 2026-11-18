@@ -29,6 +29,8 @@ jobs:
         run: |
           node --check dist/app.js
           node --check dist/data.js
+          node --check dist/data-sources.js
+          node --check dist/data-directory.js
 
       - name: Run functional checks
         run: node tests/check-workspace.cjs

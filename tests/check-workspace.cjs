@@ -19,13 +19,15 @@ function setup(saved=null){
   };
   vm.createContext(context);
   vm.runInContext(fs.readFileSync(directory+'data.js','utf8'),context);
+  vm.runInContext(fs.readFileSync(directory+'data-sources.js','utf8'),context);
+  vm.runInContext(fs.readFileSync(directory+'data-directory.js','utf8'),context);
   vm.runInContext(fs.readFileSync(directory+'app.js','utf8'),context);
   const run=code=>vm.runInContext(code,context);
   function form(data,checks={}){const controls=Object.fromEntries(Object.keys(data).map(k=>[k,{value:String(data[k]??''),focus(){}}]));Object.entries(checks).forEach(([k,v])=>controls[k]={checked:v,focus(){}});const f={data,elements:controls,checkValidity(){return true},reportValidity(){return true}};elements.set('#record-form',f);context.testForm=f;return f}
   return{context,run,element,listeners,storage,form};
 }
 const r=setup(),{run,form,element,listeners}=r;
-for(const name of ['dashboard','learning','resources','projects','opportunities','applications','evidence','roles','templates','searchPage']){
+for(const name of ['dashboard','learning','resources','dataSources','projects','opportunities','applications','evidence','roles','templates','searchPage']){
   const html=run(name+'()');check(typeof html==='string'&&html.length>100,name+' renders empty state');
 }
 check(run('totalDone()')===0,'No invented completed learning');
@@ -62,7 +64,7 @@ run('openProject("operations-kpi")');form({status:'Building',url:'https://exampl
 check(run('state.projects["operations-kpi"].status')==='Building'&&run('state.projects["operations-kpi"].checks[1]')===true,'Project status, next step and deliverables saved');
 run('openCertificate()');form({title:'Intro to SQL',provider:'Kaggle',date:run('today()'),type:'Course completion certificate',url:'https://example.org/certificate',notes:'Practice joins next'});run('saveRecord(testForm)');
 check(run('state.certificates.length')===1,'Earned certificate saved');
-for(const name of ['dashboard','learning','resources','projects','opportunities','applications','evidence','roles','templates','searchPage']){
+for(const name of ['dashboard','learning','resources','dataSources','projects','opportunities','applications','evidence','roles','templates','searchPage']){
   const html=run(name+'()');check(typeof html==='string'&&html.length>100,name+' renders populated state');
 }
 run('appView="board"');check(run('applications()').includes('kanban'),'Application board renders populated cards');
@@ -97,4 +99,45 @@ check(run('testDownload.data').includes('CV v2'),'CSV exports recorded applicati
 let rejected=false;try{run('validateBackup({version:2})')}catch{rejected=true}check(rejected,'Invalid backup version rejected');
 run('openLog('+JSON.stringify(logId)+');deleteRecord()');check(run('state.logs.length')===0,'Explicit record deletion works');
 run('openProjectBrief('+JSON.stringify(customId)+');deleteRecord()');check(run('state.customProjects.length')===0&&run('state.projects['+JSON.stringify(customId)+']')===undefined,'Deleting custom brief removes its progress');
-console.log(`PASS: ${assertions} checks. Mocked DOM/Node verification only; browser rendering and layout remain unverified.`);
+// A catalogue may contain both open downloads and mixed-access repositories.
+// Enforce the documented access boundaries and exercise the user-facing filters.
+const catalogue=r.context.window.DATA_DIRECTORY;
+check(catalogue.sources.length>=60&&catalogue.categories.length>=12,'Broad dataset directory is available');
+check(new Set(catalogue.sources.map(s=>s.id)).size===catalogue.sources.length,'Source identifiers are unique');
+check(catalogue.sources.every(s=>/^[a-z0-9-]+$/.test(s.id)),'Source identifiers are safe in links and attributes');
+check(catalogue.sources.every(s=>['name','description','projectIdea','terms','evidenceNote','checkedOn'].every(k=>typeof s[k]==='string'&&s[k].trim())),'Every source includes useful access, project and verification notes');
+check(catalogue.sources.every(s=>[s.url,s.evidenceUrl].every(u=>new URL(u).protocol==='https:')),'Provider and evidence links use HTTPS');
+check(catalogue.sources.every(s=>catalogue.categories.includes(s.category)&&s.formats.length&&s.topics.length),'Every source has a supported subject, format and topics');
+check(catalogue.sources.every(s=>['No account','Free account / key','Varies by dataset'].includes(s.access)),'Account labels use the documented choices');
+check(!catalogue.sources.some(s=>s.id==='google-dataset-search')&&catalogue.discoveryTools.some(s=>s.id==='google-dataset-search'),'Mixed-access dataset search is separate from free source entries');
+const sourceStateBefore=run('JSON.stringify(state)');
+run('dataSourceFilters=initialDataSourceFilters()');
+check(run('findDataSources().length')===catalogue.sources.length,'Unfiltered view contains the entire source directory');
+listeners.input({target:{id:'data-source-search',value:'india'}});
+check(run('findDataSources().some(s=>s.id==="data-gov-in")')&&element('#data-source-results').innerHTML.includes('Open Government Data India'),'Topic input filters results without replacing the search field');
+run('dataSourceFilters=initialDataSourceFilters()');
+listeners.change({target:{dataset:{dataFilter:'category'},value:'Sports'}});
+check(run('findDataSources().length')>=2&&run('findDataSources().every(s=>s.category==="Sports")'),'Subject filter selects sports sources');
+listeners.change({target:{dataset:{dataFilter:'format'},value:'JSON'}});
+listeners.change({target:{dataset:{dataFilter:'access'},value:'No account'}});
+check(run('findDataSources().every(s=>s.formats.includes("JSON")&&s.access==="No account")'),'Subject, format and account filters combine');
+run('dataSourceFilters.query="no-matching-source-zzzz"');
+check(run('findDataSources().length')===0&&run('dataSourceResults()').includes('No sources match these filters'),'Empty results explain how to recover');
+run('beginnerDataSources()');
+check(run('findDataSources().length')>0&&run('findDataSources().every(s=>s.level==="Beginner")'),'Beginner shortcut returns only beginner sources');
+run('resetDataSourceFilters()');
+check(run('findDataSources().length')===catalogue.sources.length&&run('JSON.stringify(state)')===sourceStateBefore,'Resetting filters preserves all tracker records');
+run('query="delivery"');
+check(run('searchPage()').includes('data-source-link="olist-ecommerce"'),'Workspace search links directly to dataset sources');
+const projectCountBefore=run('state.customProjects.length');
+run('openDataProject("ms-financial")');
+check(element('#modal-content').innerHTML.includes('sample-financial-download')&&element('#modal-content').innerHTML.includes('Source, licence, access date and data dictionary'),'Dataset project brief carries its source URL and evidence checklist');
+check(run('state.customProjects.length')===projectCountBefore,'Opening a dataset brief creates no saved project until explicit save');
+run('openDataProject("chinook")');
+check(element('#modal-content').innerHTML.includes('value="SQL"')&&element('#modal-content').innerHTML.includes('Chinook'),'SQL sample projects suggest the matching SQL tool');
+run('dataSourceFilters={...initialDataSourceFilters(),category:"Sports"};exportDataSources()');
+const directoryCsv=run('testDownload.data');
+check(directoryCsv.startsWith('\uFEFF"Source","Subject"')&&directoryCsv.includes('Cricsheet')&&!directoryCsv.includes('Microsoft Financial Sample'),'CSV exports the filtered directory with headers and source details');
+check(run('testDownload.name').startsWith('analyst-path-data-sources-'),'Directory CSV has its own descriptive filename');
+run('resetDataSourceFilters()');
+console.log(`PASS: ${assertions} checks. Mocked DOM/Node verification only; browser rendering and layout need separate checks.`);
