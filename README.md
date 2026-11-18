@@ -12,6 +12,7 @@ A practical workspace for a BA graduate and Operations Supervisor who uses Excel
 - Dated progress entries, learning time, evidence links and next actions.
 - Comparisons for Data Analyst, Govt MIS/DEO/Computer Operator, Govt Project/Programme Assistant and Govt contractual Operations/MIS.
 - Reusable CV summary, STAR, weekly review, project README and eligibility templates.
+- Light and Dark themes in the top bar. System follows your device’s appearance by default. Your choice is saved in this browser.
 - JSON backup and restore.
 - A searchable free-data directory with 64 source entries across 14 subject areas, plus a clearly separate dataset-discovery tool. Filter by subject, file format, access requirements and beginner suitability; export the filtered directory to CSV or turn a source into a project brief.
 
@@ -50,11 +51,13 @@ The website is plain HTML, CSS and JavaScript. Edit the files in `dist/` directl
 With Node.js 18 or later:
 
 ```sh
+node --check dist/theme.js
 node --check dist/app.js
 node --check dist/data.js
 node --check dist/data-sources.js
 node --check dist/data-directory.js
 node tests/check-workspace.cjs
+node --test tests/check-theme.cjs
 ```
 
 The functional suite uses Node with a mocked DOM. It covers record creation/editing, project checklists, application stages, persistence, backup validation, safe rendering and CSV output. It does not verify browser rendering or responsive layout.
@@ -64,12 +67,15 @@ The functional suite uses Node with a mocked DOM. It covers record creation/edit
 ```text
 dist/
   index.html
+  theme.js
+  theme.css
   styles.css
   data.js
   data-sources.js
   data-directory.js
   app.js
 tests/
+  check-theme.cjs
   check-workspace.cjs
 .github/workflows/
   pages.yml

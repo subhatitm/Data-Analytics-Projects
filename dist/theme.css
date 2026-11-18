@@ -1,0 +1,121 @@
+:root {
+  color-scheme: light;
+  --header: #fbfcf9;
+}
+
+.theme-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  color: var(--text);
+  font-size: 12px;
+}
+.theme-control select {
+  min-height: 36px;
+  padding: 4px 7px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  background-color: var(--paper);
+  cursor: pointer;
+}
+
+@media (max-width: 650px) {
+  .theme-control select { min-height: 44px; }
+  .breadcrumb { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .topbar-right { flex-shrink: 0; }
+  .search-box:focus-within { background: var(--header); }
+}
+@media (max-width: 420px) {
+  .theme-control span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #111914;
+  --header: #15201b;
+  --sidebar: #19251f;
+  --paper: #1d2a23;
+  --raised: #27372d;
+  --tint: #2b4031;
+  --text: #edf2e9;
+  --muted: #b4c2b7;
+  --line: #3b4d40;
+  --green: #bfd6a1;
+  --on-accent: #182b1c;
+  --input-border: #687d6d;
+  --focus: #daeeb3;
+
+  & .topbar { background: var(--header); }
+  & :is(.card, .stat, .resource-item, .table-wrap, .skip, dialog, .button, .tab.active) {
+    background: var(--paper);
+    color: var(--text);
+  }
+  & :is(th, .template-body, .kanban-col, .button.soft, .icon-button:hover, .kanban-head span) {
+    background: var(--raised);
+  }
+  & :is(.note-box, .callout, .data-dashboard-link, .data-source-idea, .profile-chips span) {
+    background: var(--tint);
+    border-color: var(--line);
+  }
+  & :is(.breadcrumb, .breadcrumb span, .search-box, .page-heading p, .date, .muted, footer,
+    .stat-top, .stat-top svg, .stat-number span, .stat-foot, .skill-card p, .skill-progress-label,
+    .section-head .subtitle, .check-desc, .task-list .check-desc, .weekly-goal, .note-box p,
+    .project-preview p, .empty-inline, .profile-chips span, .panel-head p, .task-time, .tab,
+    .resource-item p, .source-card p, .project-card p, .checklist-summary, .callout, .page-empty p,
+    th, td, td small, .kanban-head, .application-card p, .application-card small,
+    .log-date, .log-content p, .role-card p, .role-card ul, .template-card p, .chart-column small,
+    .chart-column .minutes, .search-result p, .field small, .form-section p, .modal-head p,
+    .inline-note, .section-intro, .profile-summary, .history-line, .data-dashboard-link p,
+    .data-start-card p, .data-filter-actions > span, .data-results-heading p, .data-source-description,
+    .data-source-terms, .data-source-idea p, .data-source-evidence, .data-discovery-card > p) {
+    color: var(--muted);
+  }
+  & :is(.breadcrumb strong, td strong, .field, .tab.active) { color: var(--text); }
+  & :is(.external-link, .text-button, .button.ghost, .skill-card .card-bottom, .weekly-goal strong,
+    .log-date strong, .role-card h4, .callout strong, .data-source-access, .data-source-idea strong,
+    .icon-button, .empty-inline svg, .note-box svg, .footer-star) { color: var(--green); }
+  & :is(.button.primary, .button.lime) {
+    background: var(--green);
+    border-color: var(--green);
+    color: var(--on-accent);
+  }
+  & .button.ghost { background: transparent; }
+  & .button.danger { color: #ffb8aa; }
+  & :is(.check-row, .skill-card .card-bottom, td, .search-box kbd) { border-color: var(--line); }
+  & :is(.filters select, .filters input, .status-select, .field select, .field input, .field textarea,
+    .check-row input[type="checkbox"], .theme-control select) {
+    background-color: var(--bg);
+    color: var(--text);
+    border-color: var(--input-border);
+  }
+  & ::placeholder { color: var(--muted); }
+  & .check-row input:checked { background: var(--green); border-color: var(--green); }
+  & .check-row input:checked::after { color: var(--on-accent); }
+  & .check-row:has(input:checked) .check-title { color: var(--muted); }
+  & :focus-visible { outline-color: var(--focus); }
+  & .field :is(input, select, textarea):focus { border-color: var(--focus); }
+
+  & :is(.badge, .badge.green, .skill-icon, .page-empty .empty-icon) { color: #d0e7b6; background: #324633; }
+  & :is(.badge.amber, .skill-icon.powerbi, .project-preview .project-icon) { color: #f3d798; background: #453b27; }
+  & :is(.badge.blue, .skill-icon.sql) { color: #c5dafa; background: #2d3e53; }
+  & .badge.gray { color: #d2d9d1; background: #354139; }
+  & :is(.badge.red, .danger-note) { color: #ffcabd; background: #4b332e; border-color: #725045; }
+  & .followup-due { color: #ffd09d !important; }
+  & .progress-line { background: var(--line); }
+  & .progress-ring {
+    background: conic-gradient(var(--green) calc(var(--p) * 1%), var(--line) 0);
+    color: var(--text);
+  }
+  & .progress-ring::before { background: var(--paper); }
+  & .avatar { border-color: var(--paper); box-shadow: 0 0 0 1px var(--input-border); }
+  & dialog::backdrop { background: #080e0bc4; }
+  & #toast { background: #d3e5c3; color: var(--on-accent); }
+}

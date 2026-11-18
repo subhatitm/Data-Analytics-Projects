@@ -27,13 +27,16 @@ jobs:
 
       - name: Check JavaScript syntax
         run: |
+          node --check dist/theme.js
           node --check dist/app.js
           node --check dist/data.js
           node --check dist/data-sources.js
           node --check dist/data-directory.js
 
       - name: Run functional checks
-        run: node tests/check-workspace.cjs
+        run: |
+          node tests/check-workspace.cjs
+          node --test tests/check-theme.cjs
 
       - name: Configure Pages
         uses: actions/configure-pages@v6
