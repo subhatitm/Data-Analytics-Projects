@@ -1,0 +1,15 @@
+{
+  "counts": {
+    "source_orders": 99441,
+    "source_customers": 99441,
+    "purchase_cohort": 99092,
+    "non_delivered": 2881,
+    "scored": 96203,
+    "stage_valid": 96018,
+    "delivered_excluded": 8
+  },
+  "sha256": {
+    "orders": "8df58ef3d2d7e9944010f7beecd9b75367f5588ec6e3c91cec19ae3345ef9ecf",
+    "customers": "983a422239e1712ded753b3bf9ecf47dc73f144d306029dcfa99e70a226883d2"
+  }
+}

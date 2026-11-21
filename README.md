@@ -2,6 +2,12 @@
 
 A practical workspace for a BA graduate and Operations Supervisor who uses Excel daily and is learning SQL and Power BI. Plan learning, build honest evidence, compare roles and track genuine applications using free resources.
 
+## Featured logistics case study
+
+[Open the delivery reliability dashboard](https://subhatitm.github.io/Data-Analytics-Projects/logistics/) · [Read the analysis and reproduce the SQL results](logistics/README.md)
+
+An independent analysis of 96,203 delivered Olist orders compares late-delivery volume, risk and severity across Brazilian destinations. Includes an interactive scorecard, data-quality audit and an Excel-ready export.
+
 ## What's included
 
 - 18 guided Excel, SQL and Power BI practice steps with saved completion and self assessment.
